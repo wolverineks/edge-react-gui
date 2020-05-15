@@ -1,16 +1,16 @@
+// @flow
 /* globals jest describe it expect */
-/* eslint-disable flowtype/require-valid-file-annotation */
 
 import React from 'react'
 import ShallowRenderer from 'react-test-renderer/shallow'
 
-import { SendConfirmation } from '../components/scenes/SendConfirmationScene.js'
+import { SendConfirmationComponent } from '../components/scenes/SendConfirmationScene.js'
 
 describe('SendConfirmation', () => {
   it('should render with standard props', () => {
     const renderer = new ShallowRenderer()
 
-    const props = {
+    const props: any = {
       fiatCurrencyCode: 'USD',
       currencyCode: 'BTC',
       nativeAmount: '0',
@@ -54,7 +54,7 @@ describe('SendConfirmation', () => {
       address: '123123123',
       guiWallet: {}
     }
-    const actual = renderer.render(<SendConfirmation {...props} />)
+    const actual = renderer.render(<SendConfirmationComponent {...props} />)
 
     expect(actual).toMatchSnapshot()
   })
@@ -62,7 +62,7 @@ describe('SendConfirmation', () => {
   it('should render with destination', () => {
     const renderer = new ShallowRenderer()
 
-    const props = {
+    const props: any = {
       fiatCurrencyCode: 'USD',
       currencyCode: 'BTC',
       nativeAmount: '0',
@@ -106,7 +106,7 @@ describe('SendConfirmation', () => {
       address: '123123123',
       guiWallet: {}
     }
-    const actual = renderer.render(<SendConfirmation {...props} />)
+    const actual = renderer.render(<SendConfirmationComponent {...props} />)
 
     expect(actual).toMatchSnapshot()
   })
@@ -114,7 +114,7 @@ describe('SendConfirmation', () => {
   it('should render with unique identifier button with "ADD" text (XRP)', () => {
     const renderer = new ShallowRenderer()
 
-    const props = {
+    const props: any = {
       fiatCurrencyCode: 'USD',
       currencyCode: 'XRP',
       nativeAmount: '0',
@@ -157,7 +157,7 @@ describe('SendConfirmation', () => {
       pin: '',
       guiWallet: {}
     }
-    const actual = renderer.render(<SendConfirmation {...props} />)
+    const actual = renderer.render(<SendConfirmationComponent {...props} />)
 
     expect(actual).toMatchSnapshot()
   })
@@ -165,7 +165,7 @@ describe('SendConfirmation', () => {
   it('should render with unique identifier button with "ADD" text (XMR)', () => {
     const renderer = new ShallowRenderer()
 
-    const props = {
+    const props: any = {
       fiatCurrencyCode: 'USD',
       currencyCode: 'XMR',
       nativeAmount: '0',
@@ -208,7 +208,7 @@ describe('SendConfirmation', () => {
       pin: '',
       guiWallet: {}
     }
-    const actual = renderer.render(<SendConfirmation {...props} />)
+    const actual = renderer.render(<SendConfirmationComponent {...props} />)
 
     expect(actual).toMatchSnapshot()
   })

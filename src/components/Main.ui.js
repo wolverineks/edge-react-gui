@@ -60,7 +60,6 @@ import OtpSettingsSceneConnector from '../connectors/scenes/OtpSettingsSceneConn
 import PasswordRecoveryConnector from '../connectors/scenes/PasswordRecoveryConnector.js'
 import Request from '../connectors/scenes/RequestConnector.js'
 import Scan from '../connectors/scenes/ScanConnector'
-import SendConfirmation from '../connectors/scenes/SendConfirmationConnector.js'
 import SettingsOverview from '../connectors/scenes/SettingsOverviewConnector'
 import TransactionDetails from '../connectors/scenes/TransactionDetailsConnector.js'
 import TransactionListConnector from '../connectors/scenes/TransactionListConnector'
@@ -94,6 +93,7 @@ import { GuiPluginLegacyScene, renderLegacyPluginBackButton } from './scenes/Gui
 import { GuiPluginListScene } from './scenes/GuiPluginListScene.js'
 import { GuiPluginViewScene } from './scenes/GuiPluginViewScene.js'
 import { LoginScene } from './scenes/LoginScene.js'
+import { SendConfirmationScene } from './scenes/SendConfirmationScene.js'
 import { SwapActivateShapeshiftScene } from './scenes/SwapActivateShapeshiftScene.js'
 import { TermsOfServiceComponent } from './scenes/TermsOfServiceScene.js'
 import { showToast } from './services/AirshipInstance.js'
@@ -498,7 +498,7 @@ export class MainComponent extends Component<Props> {
               navTransparent={true}
               hideTabBar
               panHandlers={null}
-              component={ifLoggedIn(SendConfirmation)}
+              component={ifLoggedIn(SendConfirmationScene)}
               renderTitle={this.renderWalletName()}
               renderLeftButton={this.renderBackButton()}
               renderRightButton={this.renderSendConfirmationButton()}

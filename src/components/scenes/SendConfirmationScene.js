@@ -2,16 +2,38 @@
 
 import { bns } from 'biggystring'
 import { Scene } from 'edge-components'
-import type { EdgeCurrencyInfo, EdgeCurrencyWallet, EdgeDenomination, EdgeMetadata, EdgeSpendInfo, EdgeTransaction } from 'edge-core-js'
+import {
+  type EdgeCurrencyInfo,
+  type EdgeCurrencyWallet,
+  type EdgeDenomination,
+  type EdgeMetadata,
+  type EdgeSpendInfo,
+  type EdgeTransaction,
+  errorNames
+} from 'edge-core-js'
 import React, { Component, Fragment } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import slowlog from 'react-native-slowlog'
+import { connect } from 'react-redux'
 import { sprintf } from 'sprintf-js'
 
+import {
+  getAuthRequiredDispatch,
+  newPin,
+  newSpendInfo,
+  reset,
+  sendConfirmationUpdateTx,
+  signBroadcastAndSave,
+  updateAmount,
+  updateSpendPending,
+  updateTransaction
+} from '../../actions/SendConfirmationActions.js'
+import { activated as uniqueIdentifierModalActivated } from '../../actions/UniqueIdentifierModalActions.js'
 import { UniqueIdentifierModalConnect as UniqueIdentifierModal } from '../../connectors/UniqueIdentifierModalConnector.js'
 import { FEE_ALERT_THRESHOLD, FEE_COLOR_THRESHOLD, getSpecialCurrencyInfo } from '../../constants/indexConstants.js'
 import { intl } from '../../locales/intl'
 import s from '../../locales/strings.js'
+import { getDisplayDenomination, getExchangeDenomination as settingsGetExchangeDenomination, getPlugins } from '../../modules/Settings/selectors.js'
 import ExchangeRate from '../../modules/UI/components/ExchangeRate/index.js'
 import type { ExchangedFlipInputAmounts } from '../../modules/UI/components/FlipInput/ExchangedFlipInput2.js'
 import { ExchangedFlipInput } from '../../modules/UI/components/FlipInput/ExchangedFlipInput2.js'
@@ -19,70 +41,83 @@ import Text from '../../modules/UI/components/FormattedText/index'
 import { PinInput } from '../../modules/UI/components/PinInput/PinInput.ui.js'
 import Recipient from '../../modules/UI/components/Recipient/index.js'
 import ABSlider from '../../modules/UI/components/Slider/index.js'
-import { type AuthType, getSpendInfoWithoutState } from '../../modules/UI/scenes/SendConfirmation/selectors'
-import { convertCurrencyFromExchangeRates } from '../../modules/UI/selectors.js'
+import {
+  type AuthType,
+  getError,
+  getForceUpdateGuiCounter,
+  getKeyboardIsVisible,
+  getPending,
+  getPublicAddress,
+  getSpendInfoWithoutState,
+  getTransaction
+} from '../../modules/UI/scenes/SendConfirmation/selectors.js'
+import {
+  convertCurrencyFromExchangeRates,
+  getExchangeDenomination,
+  getExchangeRate,
+  getSelectedCurrencyCode,
+  getSelectedWallet
+} from '../../modules/UI/selectors.js'
 import { type GuiMakeSpendInfo, type SendConfirmationState } from '../../reducers/scenes/SendConfirmationReducer.js'
 import { rawStyles, styles } from '../../styles/scenes/SendConfirmationStyle.js'
+import type { Dispatch, State as ReduxState } from '../../types/reduxTypes.js'
 import type { GuiCurrencyInfo, GuiDenomination, GuiWallet } from '../../types/types.js'
-import { convertNativeToDisplay, convertNativeToExchange, decimalOrZero, getDenomFromIsoCode } from '../../util/utils.js'
+import { convertNativeToDisplay, convertNativeToExchange, decimalOrZero, getCurrencyInfo, getDenomFromIsoCode } from '../../util/utils.js'
 import { AddressTextWithBlockExplorerModal } from '../common/AddressTextWithBlockExplorerModal'
 import { SceneWrapper } from '../common/SceneWrapper.js'
 import { showError } from '../services/AirshipInstance'
 
 const DIVIDE_PRECISION = 18
 
-export type SendConfirmationStateProps = {
-  fiatCurrencyCode: string,
-  currencyInfo: EdgeCurrencyInfo | null,
-  currencyCode: string,
-  nativeAmount: string,
-  parentNetworkFee: string | null,
-  networkFee: string | null,
-  pending: boolean,
-  keyboardIsVisible: boolean,
-  balanceInCrypto: string,
-  balanceInFiat: number,
-  parentDisplayDenomination: EdgeDenomination,
-  parentExchangeDenomination: GuiDenomination,
-  primaryDisplayDenomination: EdgeDenomination,
-  primaryExchangeDenomination: GuiDenomination,
-  secondaryExchangeCurrencyCode: string,
-  errorMsg: string | null,
-  fiatPerCrypto: number,
-  sliderDisabled: boolean,
-  resetSlider: boolean,
-  forceUpdateGuiCounter: number,
-  uniqueIdentifier?: string,
-  transactionMetadata: EdgeMetadata | null,
-  isEditable: boolean,
-  authRequired: 'pin' | 'none',
-  address: string,
-  exchangeRates: { [string]: number },
-  coreWallet: EdgeCurrencyWallet,
-  sceneState: SendConfirmationState,
-  toggleCryptoOnTop: number,
-  guiWallet: GuiWallet,
-  isConnected: boolean
-}
-
-export type SendConfirmationDispatchProps = {
-  updateSpendPending: boolean => any,
-  signBroadcastAndSave: () => any,
-  reset: () => any,
-  updateAmount: (nativeAmount: string, exchangeAmount: string, fiatPerCrypto: string) => any,
-  sendConfirmationUpdateTx: (guiMakeSpendInfo: GuiMakeSpendInfo) => any,
-  onChangePin: (pin: string) => mixed,
-  uniqueIdentifierButtonPressed: () => void,
-  newSpendInfo: (EdgeSpendInfo, AuthType) => mixed,
-  updateTransaction: (?EdgeTransaction, ?GuiMakeSpendInfo, ?boolean, ?Error) => void,
-  getAuthRequiredDispatch: EdgeSpendInfo => void
-}
-
-type SendConfirmationRouterParams = {
+type OwnProps = {
   guiMakeSpendInfo: GuiMakeSpendInfo
 }
-
-type Props = SendConfirmationStateProps & SendConfirmationDispatchProps & SendConfirmationRouterParams
+type StateProps = {
+  address: string,
+  authRequired: 'pin' | 'none',
+  balanceInCrypto: string,
+  balanceInFiat: number,
+  coreWallet: EdgeCurrencyWallet,
+  currencyCode: string,
+  currencyInfo: EdgeCurrencyInfo | null,
+  errorMsg: string | null,
+  exchangeRates: { [string]: number },
+  fiatCurrencyCode: string,
+  fiatPerCrypto: number,
+  forceUpdateGuiCounter: number,
+  guiWallet: GuiWallet,
+  isConnected: boolean,
+  isEditable: boolean,
+  keyboardIsVisible: boolean,
+  nativeAmount: string,
+  networkFee: string | null,
+  parentDisplayDenomination: EdgeDenomination,
+  parentExchangeDenomination: GuiDenomination,
+  parentNetworkFee: string | null,
+  pending: boolean,
+  primaryDisplayDenomination: EdgeDenomination,
+  primaryExchangeDenomination: GuiDenomination,
+  resetSlider: boolean,
+  sceneState: SendConfirmationState,
+  secondaryExchangeCurrencyCode: string,
+  sliderDisabled: boolean,
+  toggleCryptoOnTop: number,
+  transactionMetadata: EdgeMetadata | null,
+  uniqueIdentifier?: string
+}
+type DispatchProps = {
+  getAuthRequiredDispatch(spendInfo: EdgeSpendInfo): void,
+  newSpendInfo(spendInfo: EdgeSpendInfo, isLimitExceeded: AuthType): void,
+  onChangePin(pin: string): void,
+  reset(): void,
+  sendConfirmationUpdateTx(guiMakeSpendInfo: GuiMakeSpendInfo): void,
+  signBroadcastAndSave(): void,
+  uniqueIdentifierButtonPressed(): void,
+  updateAmount(nativeAmount: string, exchangeAmount: string, fiatPerCrypto: string): void,
+  updateSpendPending(pending: boolean): void,
+  updateTransaction(transaction?: EdgeTransaction, guiMakeSpendInfo?: GuiMakeSpendInfo, forceUpdateGui?: boolean, error?: Error): void
+}
+type Props = OwnProps & StateProps & DispatchProps
 
 type State = {|
   secondaryDisplayDenomination: GuiDenomination,
@@ -95,7 +130,7 @@ type State = {|
   isFocus: boolean
 |}
 
-export class SendConfirmation extends Component<Props, State> {
+export class SendConfirmationComponent extends Component<Props, State> {
   pinInput: any
   flipInput: any
 
@@ -381,11 +416,11 @@ export class SendConfirmation extends Component<Props, State> {
     try {
       newSpendInfo(spendInfo, authType)
       const edgeTransaction = await coreWallet.makeSpend(spendInfo)
-      updateTransaction(edgeTransaction, guiMakeSpendInfoClone, false, null)
+      updateTransaction(edgeTransaction, guiMakeSpendInfoClone, false, undefined)
       this.setState({ showSpinner: false })
     } catch (e) {
       console.log(e)
-      updateTransaction(null, guiMakeSpendInfoClone, false, e)
+      updateTransaction(undefined, guiMakeSpendInfoClone, false, e)
     }
   }
 
@@ -492,3 +527,121 @@ export const uniqueIdentifierText = (currencyCode: string, uniqueIdentifier?: st
     return sprintf(`${uniqueIdentifierInfo.identifierName}: %s`, uniqueIdentifier)
   }
 }
+
+export const SendConfirmationScene = connect(
+  (state: ReduxState): StateProps => {
+    const sceneState = state.ui.scenes.sendConfirmation
+    let fiatPerCrypto = 0
+    let secondaryExchangeCurrencyCode = ''
+
+    const { currencyWallets = {} } = state.core.account
+    const guiWallet = getSelectedWallet(state)
+    const coreWallet = currencyWallets[guiWallet.id]
+    const currencyCode = getSelectedCurrencyCode(state)
+    const balanceInCrypto = guiWallet.nativeBalances[currencyCode]
+
+    const isoFiatCurrencyCode = guiWallet.isoFiatCurrencyCode
+    const exchangeDenomination = settingsGetExchangeDenomination(state, currencyCode)
+    const balanceInCryptoDisplay = convertNativeToExchange(exchangeDenomination.multiplier)(balanceInCrypto)
+    fiatPerCrypto = getExchangeRate(state, currencyCode, isoFiatCurrencyCode)
+    const balanceInFiat = fiatPerCrypto * parseFloat(balanceInCryptoDisplay)
+
+    const plugins: Object = getPlugins(state)
+    const allCurrencyInfos: Array<EdgeCurrencyInfo> = plugins.allCurrencyInfos
+    const currencyInfo: EdgeCurrencyInfo | void = getCurrencyInfo(allCurrencyInfos, currencyCode)
+
+    if (guiWallet) {
+      const isoFiatCurrencyCode = guiWallet.isoFiatCurrencyCode
+      secondaryExchangeCurrencyCode = isoFiatCurrencyCode
+    }
+
+    const transaction = getTransaction(state)
+    const pending = getPending(state)
+    const nativeAmount = sceneState.nativeAmount
+    // const nativeAmount = getNativeAmount(state)
+    let error = getError(state)
+
+    let errorMsg = null
+    let resetSlider = false
+    // consider refactoring this method for resetting slider
+    if (error && (error.message === 'broadcastError' || error.message === 'transactionCancelled')) {
+      error = null
+      resetSlider = true
+    }
+    errorMsg = error ? error.message : ''
+    if (error && error.name === errorNames.NoAmountSpecifiedError) errorMsg = ''
+    const networkFee = transaction ? transaction.networkFee : null
+    const parentNetworkFee = transaction && transaction.parentNetworkFee ? transaction.parentNetworkFee : null
+    const uniqueIdentifier = sceneState.guiMakeSpendInfo.uniqueIdentifier
+    const transactionMetadata = sceneState.transactionMetadata
+    const exchangeRates = state.exchangeRates
+    const { toggleCryptoOnTop } = sceneState
+
+    return {
+      address: state.ui.scenes.sendConfirmation.address,
+      authRequired: state.ui.scenes.sendConfirmation.authRequired,
+      balanceInCrypto,
+      balanceInFiat,
+      coreWallet,
+      currencyCode,
+      currencyInfo: currencyInfo || null,
+      errorMsg,
+      exchangeRates,
+      fiatCurrencyCode: guiWallet.fiatCurrencyCode,
+      fiatPerCrypto,
+      forceUpdateGuiCounter: getForceUpdateGuiCounter(state),
+      guiWallet,
+      isConnected: state.network.isConnected,
+      isEditable: sceneState.isEditable,
+      keyboardIsVisible: getKeyboardIsVisible(state),
+      nativeAmount,
+      networkFee,
+      parentDisplayDenomination: getDisplayDenomination(state, guiWallet.currencyCode),
+      parentExchangeDenomination: getExchangeDenomination(state, guiWallet.currencyCode),
+      parentNetworkFee,
+      pending,
+      primaryDisplayDenomination: getDisplayDenomination(state, currencyCode),
+      primaryExchangeDenomination: getExchangeDenomination(state, currencyCode),
+      publicAddress: getPublicAddress(state),
+      resetSlider,
+      sceneState,
+      secondaryExchangeCurrencyCode,
+      sliderDisabled: !transaction || !!error || !!pending,
+      toggleCryptoOnTop,
+      transactionMetadata,
+      uniqueIdentifier
+    }
+  },
+  (dispatch: Dispatch): DispatchProps => ({
+    getAuthRequiredDispatch (spendInfo: EdgeSpendInfo): void {
+      dispatch(getAuthRequiredDispatch(spendInfo))
+    },
+    newSpendInfo: (spendInfo: EdgeSpendInfo, isLimitExceeded: AuthType) => {
+      return dispatch(newSpendInfo(spendInfo, isLimitExceeded))
+    },
+    onChangePin (pin: string): void {
+      dispatch(newPin(pin))
+    },
+    reset (): void {
+      dispatch(reset())
+    },
+    sendConfirmationUpdateTx (guiMakeSpendInfo: GuiMakeSpendInfo): void {
+      dispatch(sendConfirmationUpdateTx(guiMakeSpendInfo))
+    },
+    signBroadcastAndSave (): void {
+      dispatch(signBroadcastAndSave())
+    },
+    uniqueIdentifierButtonPressed (): void {
+      dispatch(uniqueIdentifierModalActivated())
+    },
+    updateAmount (nativeAmount: string, exchangeAmount: string, fiatPerCrypto: string) {
+      return dispatch(updateAmount(nativeAmount, exchangeAmount, fiatPerCrypto))
+    },
+    updateSpendPending (pending: boolean): void {
+      dispatch(updateSpendPending(pending))
+    },
+    updateTransaction (transaction?: EdgeTransaction, guiMakeSpendInfo?: GuiMakeSpendInfo, forceUpdateGui?: boolean, error?: Error) {
+      dispatch(updateTransaction(transaction, guiMakeSpendInfo, forceUpdateGui, error))
+    }
+  })
+)(SendConfirmationComponent)
