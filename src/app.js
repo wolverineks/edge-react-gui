@@ -153,3 +153,4 @@ fetch = (...args: any) => {
 
 // FIO disable changes below
 global.isFioDisabled = false
+console.disableYellowBox = true
