@@ -36,6 +36,8 @@ export const currencyPlugins = {
   rsk: true,
   stellar: true,
   tezos: true,
+  neo: true,
+  one: true,
   // edge-currency-bitcoin:
   bitcoin: true,
   bitcoincash: true,
