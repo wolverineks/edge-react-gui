@@ -38,6 +38,7 @@ export const currencyPlugins = {
   tezos: true,
   neo: true,
   one: true,
+  hedera: true,
   // edge-currency-bitcoin:
   bitcoin: true,
   bitcoincash: true,
