@@ -15,6 +15,31 @@
     "paymentTypeLogoKey": "credit"
   },
   {
+    "id": "banxa",
+    "pluginId": "banxa",
+    "paymentTypes": [
+      "bank"
+    ],
+    
+    "title": "Bank Transfer",
+    "partnerIconPath": "https://edge.app/wp-content/uploads/2019/08/banxa.png",
+    "forCountries": [
+      "GB",
+      "AU"
+    ],
+    "cryptoCodes": [
+      "BTC"
+    ],
+    "description": "Fee: 2.5% / Settlement: Instant - 24hours\nLimit: $30000/day",
+    "paymentTypeLogoKey": "bank",
+    "deepPath": "/",
+    "deepQuery": {
+      "sellMode": "",
+      "country": "AU",
+      "payment_id": "6028"
+    }
+  },
+  {
     "id": "wyre",
     "pluginId": "wyre",
     "paymentTypes": [
@@ -467,6 +492,10 @@
     "sortIndex": 5
   },
   {
+    "id": "banxa",
+    "sortIndex": 3
+  },
+  {
     "id": "safello.bank",
     "sortIndex": 2
   },
@@ -495,5 +524,19 @@
       "DK"
     ],
     "title": "DKK Bank Transfer"
+  },
+  {
+    "id": "banxa",
+    "forCountries": [
+      "GB"
+    ],
+    "description": "Fee: 2.5% / Settlement: Instant - 24hours\nLimit: €10000/day",
+    "title": "Faster Payments",
+    "paymentTypeLogoKey": "fasterPayments",
+    "deepQuery": {
+      "sellMode": "",
+      "country": "GB",
+      "payment_id": "6028"
+    }
   }
 ]
