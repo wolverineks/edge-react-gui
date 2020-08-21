@@ -104,8 +104,11 @@ export const selectWalletOrRequireSetup = (walletId: string, currencyCode: strin
       })
       launchModal(modal)
     } else {
+      // Update all wallets' addresses. Hopefully gets the updated address for the next time
+      // We enter the EOSIO wallet
+      dispatch(updateWalletsRequest())
       // not activated yet
-      // find fiat and crypto (EOS) types and populate scene props
+      // find fiat and crypto (EOSIO) types and populate scene props
       const supportedFiats = UTILS.getSupportedFiats()
       const fiatTypeIndex = supportedFiats.findIndex(fiatType => fiatType.value === guiWallet.fiatCurrencyCode)
       const selectedFiat = supportedFiats[fiatTypeIndex]

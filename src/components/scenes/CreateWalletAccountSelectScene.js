@@ -1,6 +1,6 @@
 // @flow
 
-import type { EdgeCurrencyWallet } from 'edge-core-js'
+import type { EdgeCurrencyConfig, EdgeCurrencyWallet } from 'edge-core-js'
 import * as React from 'react'
 import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
@@ -32,7 +32,8 @@ export type AccountPaymentParams = {
   requestedAccountName: string,
   currencyCode: string,
   ownerPublicKey: string,
-  activePublicKey: string
+  activePublicKey: string,
+  requestedAccountCurrencyCode: string
 }
 
 export type CreateWalletAccountSelectStateProps = {
@@ -41,12 +42,13 @@ export type CreateWalletAccountSelectStateProps = {
   paymentAddress: string,
   amount: string,
   expireTime: string,
-  supportedCurrencies: { [string]: boolean },
+  supportedCurrencies: { [currencyCode: string]: boolean },
   activationCost: string,
   isCreatingWallet: boolean,
   paymentDenominationSymbol: string,
   existingCoreWallet: EdgeCurrencyWallet,
-  walletAccountActivationQuoteError: string
+  walletAccountActivationQuoteError: string,
+  currencyConfigs: { [key: string]: EdgeCurrencyConfig }
 }
 
 export type CreateWalletAccountSelectOwnProps = {
@@ -59,10 +61,10 @@ export type CreateWalletAccountSelectOwnProps = {
 
 export type CreateWalletAccountSelectDispatchProps = {
   createAccountBasedWallet: (string, string, string, boolean, boolean) => any,
-  fetchAccountActivationInfo: string => void,
-  createAccountTransaction: (string, string, string) => void,
-  fetchWalletAccountActivationPaymentInfo: (AccountPaymentParams, EdgeCurrencyWallet) => void,
-  setWalletAccountActivationQuoteError: string => void
+  fetchAccountActivationInfo: string => any,
+  createAccountTransaction: (string, string, string) => any,
+  fetchWalletAccountActivationPaymentInfo: (AccountPaymentParams, EdgeCurrencyWallet) => any,
+  setWalletAccountActivationQuoteError: string => any
 }
 
 type Props = CreateWalletAccountSelectOwnProps & CreateWalletAccountSelectDispatchProps & CreateWalletAccountSelectStateProps
@@ -135,7 +137,7 @@ export class CreateWalletAccountSelect extends React.Component<Props, State> {
   }
 
   onSelectWallet = async (walletId: string, paymentCurrencyCode: string) => {
-    const { wallets, accountName, fetchWalletAccountActivationPaymentInfo, setWalletAccountActivationQuoteError } = this.props
+    const { wallets, accountName, fetchWalletAccountActivationPaymentInfo, setWalletAccountActivationQuoteError, selectedWalletType } = this.props
     setWalletAccountActivationQuoteError('') // reset fetching quote error to falsy
     const paymentWallet = wallets[walletId]
     const walletName = paymentWallet.name
@@ -148,7 +150,8 @@ export class CreateWalletAccountSelect extends React.Component<Props, State> {
       requestedAccountName: accountName,
       currencyCode: paymentCurrencyCode,
       ownerPublicKey: createdWallet.publicWalletInfo.keys.ownerPublicKey,
-      activePublicKey: createdWallet.publicWalletInfo.keys.publicKey
+      activePublicKey: createdWallet.publicWalletInfo.keys.publicKey,
+      requestedAccountCurrencyCode: selectedWalletType.currencyCode
     }
 
     fetchWalletAccountActivationPaymentInfo(paymentInfo, createdWallet)
