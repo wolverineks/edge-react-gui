@@ -1,37 +1,35 @@
 // @flow
 
 import * as React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import slowlog from 'react-native-slowlog'
 import { sprintf } from 'sprintf-js'
 
 import { type WalletListMenuKey } from '../../actions/WalletListMenuActions.js'
 import { WALLET_LIST_MENU } from '../../constants/WalletAndCurrencyConstants.js'
 import s from '../../locales/strings.js'
-import { MenuDropDown, MenuDropDownStyle } from '../../modules/UI/components/MenuDropDown/MenuDropDown.ui.js'
+import { THEME } from '../../theme/variables/airbitz.js'
 import { scale } from '../../util/scaling.js'
+import { WalletListMenuModal } from '../modals/WalletListMenuModal.js'
+import { Airship } from '../services/AirshipInstance.js'
 
-type Props = {
-  walletId: string,
-  executeWalletRowOption: (walletId: string, option: WalletListMenuKey, currencyCode?: string) => void,
-  currencyCode?: string,
-  customStyles: StyleSheet.Styles,
-  isToken?: boolean
+export type Option = {
+  value: WalletListMenuKey,
+  label: string
 }
 
-const modifiedMenuDropDownStyle = {
-  // manually overwrite width
-  ...MenuDropDownStyle,
-  icon: {
-    ...MenuDropDownStyle.icon,
-    fontSize: scale(30),
-    position: 'relative',
-    top: 2
-  }
+type Props = {
+  currencyCode?: string,
+  customStyles: StyleSheet.Styles,
+  executeWalletRowOption: (walletId: string, option: WalletListMenuKey, currencyCode?: string) => void,
+  walletId: string,
+  isToken?: boolean,
+  currencyName?: string,
+  image?: string
 }
 
 export class WalletListMenu extends React.Component<Props> {
-  options: Array<{ value: string, label: string }>
+  options: Array<Option>
 
   constructor(props: Props) {
     super(props)
@@ -77,8 +75,34 @@ export class WalletListMenu extends React.Component<Props> {
     executeWalletRowOption(walletId, optionKey, currencyCode)
   }
 
+  openWalletListMenuModal = async () => {
+    const { currencyName, currencyCode, image } = this.props
+    const optionKey = await Airship.show(bridge => (
+      <WalletListMenuModal bridge={bridge} options={this.options} currencyName={currencyName} currencyCode={currencyCode} image={image} />
+    ))
+    optionKey && this.optionAction(optionKey)
+  }
+
   render() {
-    const { customStyles } = this.props
-    return <MenuDropDown style={{ ...modifiedMenuDropDownStyle, ...customStyles }} onSelect={this.optionAction} data={this.options} />
+    return (
+      <TouchableWithoutFeedback onPress={this.openWalletListMenuModal}>
+        <View style={style.menuIconWrap}>
+          <Text style={style.icon}>&#8942;</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    )
+  }
+}
+
+const style = {
+  menuIconWrap: {
+    width: scale(46),
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  icon: {
+    fontSize: scale(20),
+    color: THEME.COLORS.GRAY_1
   }
 }

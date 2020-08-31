@@ -53,7 +53,7 @@ export class WalletListTokenRow extends React.PureComponent<Props> {
     const { wallet, currencyCode, settings, exchangeRates, walletFiatSymbol, showBalance, progress } = this.props
     const { name } = wallet
     const meta = wallet.metaTokens.find(token => token.currencyCode === currencyCode)
-    const symbolImage = meta ? meta.symbolImage : null
+    const symbolImage = meta ? meta.symbolImage : undefined
     const cryptoAmount = intl.formatNumber(UTILS.convertNativeToDisplay(this.props.displayDenomination.multiplier)(this.props.balance) || '0') // check if infinitesimal (would display as zero), cut off trailing zeroes
     const cryptoAmountString = showBalance ? cryptoAmount : ''
     const rateKey = `${currencyCode}_${wallet.isoFiatCurrencyCode}`
@@ -124,7 +124,9 @@ export class WalletListTokenRow extends React.PureComponent<Props> {
           <View style={styles.rowOptionsWrap}>
             <WalletListMenu
               currencyCode={currencyCode}
+              currencyName={name}
               customStyles={customWalletListOptionsStyles}
+              image={symbolImage}
               executeWalletRowOption={this.props.executeWalletRowOption}
               walletId={wallet.id}
               isToken

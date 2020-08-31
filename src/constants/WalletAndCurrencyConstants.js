@@ -345,10 +345,6 @@ export const WALLET_LIST_MENU: {
     value: 'rename'
   },
   {
-    label: s.strings.string_delete,
-    value: 'delete'
-  },
-  {
     label: s.strings.string_resync,
     value: 'resync'
   },
@@ -400,6 +396,10 @@ export const WALLET_LIST_MENU: {
   {
     label: s.strings.string_get_raw_keys,
     value: 'getRawKeys'
+  },
+  {
+    label: s.strings.string_delete_wallet,
+    value: 'delete'
   }
 ]
 

@@ -183,6 +183,8 @@ class WalletListRowComponent extends React.Component<Props> {
               <View style={styles.rowOptionsWrap}>
                 <WalletListMenu
                   currencyCode={guiWallet.currencyCode}
+                  currencyName={guiWallet.name}
+                  image={guiWallet.symbolImage}
                   customStyles={customWalletListOptionsStyles}
                   executeWalletRowOption={this.props.executeWalletRowOption}
                   walletId={id}
