@@ -6,9 +6,6 @@ import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-na
 import { Actions } from 'react-native-router-flux'
 import { sprintf } from 'sprintf-js'
 
-import eosLogo from '../../assets/images/currencies/fa_logo_eos.png'
-import hederaLogo from '../../assets/images/currencies/fa_logo_hedera.png'
-import steemLogo from '../../assets/images/currencies/fa_logo_steem.png'
 import { type WalletListResult, WalletListModal } from '../../components/modals/WalletListModal.js'
 import s from '../../locales/strings.js'
 import { PrimaryButton } from '../../modules/UI/components/Buttons/PrimaryButton.ui.js'
@@ -21,12 +18,6 @@ import { scale } from '../../util/scaling.js'
 import { logEvent } from '../../util/tracking.js'
 import { fixFiatCurrencyCode } from '../../util/utils.js'
 import { Airship } from '../services/AirshipInstance.js'
-
-const logos = {
-  EOS: eosLogo,
-  steem: steemLogo,
-  HBAR: hederaLogo
-}
 
 export type AccountPaymentParams = {
   requestedAccountName: string,
@@ -244,8 +235,10 @@ export class CreateWalletAccountSelect extends React.Component<Props, State> {
   }
 
   render() {
-    const { supportedCurrencies, selectedWalletType, activationCost, wallets, walletAccountActivationQuoteError } = this.props
+    const { currencyConfigs, supportedCurrencies, selectedWalletType, activationCost, wallets, walletAccountActivationQuoteError } = this.props
     const { walletId } = this.state
+    const walletTypeValue = selectedWalletType.walletType.replace('wallet:', '')
+    const { symbolImage } = currencyConfigs[walletTypeValue].currencyInfo
     const instructionSyntax = sprintf(
       s.strings.create_wallet_account_select_instructions_with_cost,
       selectedWalletType.currencyCode,
@@ -275,7 +268,7 @@ export class CreateWalletAccountSelect extends React.Component<Props, State> {
           <Gradient style={styles.scrollableGradient} />
           <ScrollView>
             <View style={styles.scrollableView}>
-              <Image source={logos[selectedWalletType.currencyCode]} style={styles.currencyLogo} resizeMode="cover" />
+              <Image source={{ uri: symbolImage }} style={styles.currencyLogo} resizeMode="cover" />
               <View style={styles.createWalletPromptArea}>
                 <Text style={styles.instructionalText}>{!walletId || walletAccountActivationQuoteError ? instructionSyntax : confirmMessageSyntax}</Text>
               </View>
