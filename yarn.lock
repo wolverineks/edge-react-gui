@@ -4161,9 +4161,9 @@ edge-core-js@^0.17.9:
     scrypt-js "^2.0.3"
     yaob "^0.3.6"
 
-"edge-currency-accountbased@https://github.com/EdgeApp/edge-currency-accountbased.git#f87778b":
+"edge-currency-accountbased@https://github.com/EdgeApp/edge-currency-accountbased.git#a6553a3b":
   version "0.7.18"
-  resolved "https://github.com/EdgeApp/edge-currency-accountbased.git#f87778bb9186f9bee3647bab47f89fc767e189c7"
+  resolved "https://github.com/EdgeApp/edge-currency-accountbased.git#a6553a3baae280dd46abb5b7662f19e9e9e7333f"
   dependencies:
     "@binance-chain/javascript-sdk" "^2.14.4"
     "@cityofzion/neon-js" "4"
