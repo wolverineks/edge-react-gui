@@ -251,7 +251,7 @@ export const SPECIAL_CURRENCY_INFO: SpecialCurrencyInfo = {
       identifierName: s.strings.unique_identifier_memo,
       identifierKeyboardType: 'default'
     },
-    isImportKeySupported: false
+    isImportKeySupported: true
   },
   TLOS: {
     isAccountActivationRequired: true,
