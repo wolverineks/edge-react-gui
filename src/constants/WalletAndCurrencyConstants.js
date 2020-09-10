@@ -140,6 +140,7 @@ export const CURRENCY_PLUGIN_NAMES = {
   XLM: 'stellar',
   XMR: 'monero',
   XRP: 'ripple',
+  HBAR: 'hedera',
   XTZ: 'tezos',
   XZC: 'zcoin'
 }
@@ -156,6 +157,7 @@ type SpecialCurrencyInfo = {
   [currencyCode: string]: {
     noMaxSpend?: boolean,
     needsAccountNameSetup?: boolean,
+    needsAccountCreation?: boolean,
     noChangeMiningFee?: boolean,
     allowZeroTx?: boolean,
     dummyPublicAddress?: string,
@@ -314,6 +316,11 @@ export const SPECIAL_CURRENCY_INFO: SpecialCurrencyInfo = {
   },
   FIO: {
     noChangeMiningFee: true
+  },
+  HBAR: {
+    isImportKeySupported: true,
+    needsAccountCreation: true,
+    displayBuyCrypto: false
   }
 }
 

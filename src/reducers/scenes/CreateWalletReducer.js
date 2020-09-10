@@ -16,7 +16,8 @@ export type AccountActivationPaymentInfo = {
   amount: string,
   currencyCode: string,
   exchangeAmount: string,
-  expireTime: number
+  expireTime: number,
+  otherParams?: Object
 }
 
 export type CreateWalletState = {
