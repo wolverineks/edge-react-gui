@@ -2,7 +2,7 @@
 
 import { bns } from 'biggystring'
 import * as React from 'react'
-import { type Node, Image, StyleSheet, TouchableHighlight, View } from 'react-native'
+import { Image, StyleSheet, TouchableHighlight, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 
@@ -47,7 +47,7 @@ type DispatchProps = {
 type Props = OwnProps & StateProps & DispatchProps
 
 class WalletListRowComponent extends React.Component<Props> {
-  walletListMenu: Node
+  walletListMenu: any
 
   constructor(props: Props) {
     super(props)
@@ -194,17 +194,15 @@ class WalletListRowComponent extends React.Component<Props> {
                   <T style={differencePercentageStringStyle}>{differencePercentageString}</T>
                 </View>
               </View>
-              <View style={styles.rowOptionsWrap}>
-                <WalletListMenu
-                  currencyCode={guiWallet.currencyCode}
-                  currencyName={guiWallet.name}
-                  image={guiWallet.symbolImage}
-                  customStyles={customWalletListOptionsStyles}
-                  executeWalletRowOption={this.props.executeWalletRowOption}
-                  walletId={id}
-                  ref={this.walletListMenu}
-                />
-              </View>
+              <WalletListMenu
+                hidden
+                currencyCode={guiWallet.currencyCode}
+                currencyName={guiWallet.name}
+                image={guiWallet.symbolImage}
+                executeWalletRowOption={this.props.executeWalletRowOption}
+                walletId={id}
+                ref={this.walletListMenu}
+              />
             </View>
           </TouchableHighlight>
           {this.renderTokenRow(id, enabledNativeBalances, progress)}
@@ -254,25 +252,11 @@ class WalletListRowComponent extends React.Component<Props> {
   }
 }
 
-const customWalletListOptionsStyles = StyleSheet.create({
-  icon: {
-    fontSize: scale(21),
-    fontWeight: '200',
-    position: 'relative',
-    top: 6
-  },
-  menuIconWrap: {
-    width: scale(46),
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-start'
-  }
-})
 const rowCurrencyOverlaySize = scale(23.3)
 const rawStyles = {
   rowContainer: {
     padding: scale(6),
-    paddingLeft: scale(8),
+    paddingRight: scale(12),
     height: scale(106),
     backgroundColor: THEME.COLORS.WHITE,
     borderBottomWidth: scale(1),

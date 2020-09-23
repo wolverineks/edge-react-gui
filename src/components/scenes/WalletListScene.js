@@ -1,10 +1,11 @@
 // @flow
 
 import * as React from 'react'
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import slowlog from 'react-native-slowlog'
 import SortableListView from 'react-native-sortable-listview'
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view'
 import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import { connect } from 'react-redux'
@@ -33,6 +34,7 @@ import { CrossFade } from '../common/CrossFade.js'
 import { SceneWrapper } from '../common/SceneWrapper.js'
 import { WalletListEmptyRow } from '../common/WalletListEmptyRow.js'
 import { WalletListFooter } from '../common/WalletListFooter.js'
+import { WalletListMenu } from '../common/WalletListMenu.js'
 import { WalletListRow } from '../common/WalletListRow.js'
 import { WalletListSortableRow } from '../common/WalletListSortableRow.js'
 import { WiredBalanceBox } from '../common/WiredBalanceBox.js'
@@ -59,12 +61,15 @@ type State = {
 }
 
 class WalletListComponent extends React.Component<Props, State> {
+  walletListMenu: any
+
   constructor(props: Props) {
     super(props)
     slowlog(this, /.*/, global.slowlogOptions)
     this.state = {
       sorting: false
     }
+    this.walletListMenu = React.createRef()
   }
 
   executeWalletRowOption = (walletId: string, option: WalletListMenuKey, currencyCode?: string) => {
@@ -111,14 +116,19 @@ class WalletListComponent extends React.Component<Props, State> {
         <View style={styles.listStack}>
           <CrossFade activeKey={loading ? 'spinner' : sorting ? 'sortList' : 'fullList'}>
             <ActivityIndicator key="spinner" style={styles.listSpinner} size="large" />
-            <FlatList
+            <SwipeListView
               key="fullList"
-              style={StyleSheet.absoltueFill}
+              keyExtractor={this.listKeyExtractor}
               data={activeWalletIds.map(key => ({ key }))}
+              style={StyleSheet.absoltueFill}
               extraData={wallets}
-              renderItem={this.renderRow}
               ListFooterComponent={WalletListFooter}
               ListHeaderComponent={this.renderPromoCard()}
+              rightOpenValue={THEME.rem(-3)}
+              renderItem={this.renderRow}
+              renderHiddenItem={this.renderHiddenItem}
+              disableRightSwipe
+              useFlatList
             />
             <SortableListView
               key="sortList"
@@ -132,6 +142,34 @@ class WalletListComponent extends React.Component<Props, State> {
         </View>
         <XPubModal />
       </SceneWrapper>
+    )
+  }
+
+  listKeyExtractor = (item: { key: string }) => item.key
+
+  renderHiddenItem = (data: FlatListItem<{ key: string }>, rowMap: { [string]: SwipeRow }) => {
+    const guiWallet = this.props.wallets[data.item.key]
+
+    const openWalletListMenuModal = () => {
+      if (this.walletListMenu.current) {
+        this.walletListMenu.current.openWalletListMenuModal()
+      }
+      rowMap[data.item.key].closeRow()
+    }
+
+    return (
+      <View style={styles.hiddenRowContainer}>
+        <TouchableOpacity style={styles.hiddernRowOptionsButton} onPress={openWalletListMenuModal}>
+          <WalletListMenu
+            currencyCode={guiWallet.currencyCode}
+            currencyName={guiWallet.name}
+            image={guiWallet.symbolImage}
+            executeWalletRowOption={this.executeWalletRowOption}
+            walletId={guiWallet.id}
+            ref={this.walletListMenu}
+          />
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -241,6 +279,22 @@ const rawStyles = {
   },
   promoClose: {
     padding: THEME.rem(0.5)
+  },
+  hiddenRowContainer: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  hiddernRowOptionsButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0,
+    top: 0,
+    right: 0,
+    width: THEME.rem(3),
+    backgroundColor: THEME.COLORS.ACCENT_BLUE
   }
 }
 const styles: typeof rawStyles = StyleSheet.create(rawStyles)

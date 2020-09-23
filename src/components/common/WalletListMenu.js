@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react'
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { Text, TouchableWithoutFeedback } from 'react-native'
 import slowlog from 'react-native-slowlog'
 import { sprintf } from 'sprintf-js'
 
@@ -19,8 +19,8 @@ export type Option = {
 }
 
 type Props = {
+  hidden?: boolean,
   currencyCode?: string,
-  customStyles: StyleSheet.Styles,
   executeWalletRowOption: (walletId: string, option: WalletListMenuKey, currencyCode?: string) => void,
   walletId: string,
   isToken?: boolean,
@@ -84,25 +84,20 @@ export class WalletListMenu extends React.Component<Props> {
   }
 
   render() {
+    if (this.props.hidden) {
+      return null
+    }
     return (
       <TouchableWithoutFeedback onPress={this.openWalletListMenuModal}>
-        <View style={style.menuIconWrap}>
-          <Text style={style.icon}>&#8942;</Text>
-        </View>
+        <Text style={style.icon}>&#8943;</Text>
       </TouchableWithoutFeedback>
     )
   }
 }
 
 const style = {
-  menuIconWrap: {
-    width: scale(46),
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
   icon: {
     fontSize: scale(20),
-    color: THEME.COLORS.GRAY_1
+    color: THEME.COLORS.WHITE
   }
 }

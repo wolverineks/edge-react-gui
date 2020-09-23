@@ -123,6 +123,7 @@ export class WalletListTokenRow extends React.PureComponent<Props> {
           </View>
           <View style={styles.rowOptionsWrap}>
             <WalletListMenu
+              hidden
               currencyCode={currencyCode}
               currencyName={name}
               customStyles={customWalletListOptionsStyles}
