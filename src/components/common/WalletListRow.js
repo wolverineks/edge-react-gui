@@ -2,7 +2,7 @@
 
 import { bns } from 'biggystring'
 import * as React from 'react'
-import { Image, StyleSheet, TouchableHighlight, View } from 'react-native'
+import { type Node, Image, StyleSheet, TouchableHighlight, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 
@@ -47,6 +47,13 @@ type DispatchProps = {
 type Props = OwnProps & StateProps & DispatchProps
 
 class WalletListRowComponent extends React.Component<Props> {
+  walletListMenu: Node
+
+  constructor(props: Props) {
+    super(props)
+    this.walletListMenu = React.createRef()
+  }
+
   _onPressSelectWallet = (walletId, currencyCode, publicAddress) => {
     this.props.selectWallet(walletId, currencyCode)
     // if it's EOS then we need to see if activated, if not then it will get routed somewhere else
@@ -68,6 +75,12 @@ class WalletListRowComponent extends React.Component<Props> {
   componentDidMount() {
     const { guiWallet } = this.props
     this.props.getEnabledTokensList(guiWallet.id)
+  }
+
+  openWalletListMenuModal = () => {
+    if (this.walletListMenu.current) {
+      this.walletListMenu.current.openWalletListMenuModal()
+    }
   }
 
   render() {
@@ -151,6 +164,7 @@ class WalletListRowComponent extends React.Component<Props> {
             style={styles.rowContainer}
             underlayColor={THEME.COLORS.ROW_PRESSED}
             onPress={() => this._onPressSelectWallet(id, currencyCode, guiWallet.receiveAddress.publicAddress)}
+            onLongPress={this.openWalletListMenuModal}
           >
             <View style={styles.rowContent}>
               <View style={styles.rowIconWrap}>
@@ -188,6 +202,7 @@ class WalletListRowComponent extends React.Component<Props> {
                   customStyles={customWalletListOptionsStyles}
                   executeWalletRowOption={this.props.executeWalletRowOption}
                   walletId={id}
+                  ref={this.walletListMenu}
                 />
               </View>
             </View>
