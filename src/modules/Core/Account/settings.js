@@ -37,7 +37,7 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
     denomination: '10000'
   },
   WAX: {
-    denomination: '10000'
+    denomination: '100000000'
   },
   XRP: {
     denomination: '1000000'
