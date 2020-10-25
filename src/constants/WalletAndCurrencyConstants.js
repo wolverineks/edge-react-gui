@@ -275,9 +275,9 @@ export const SPECIAL_CURRENCY_INFO: SpecialCurrencyInfo = {
     }
   },
   WAX: {
-    isAccountActivationRequired: true,
+    isAccountActivationRequired: false,
     dummyPublicAddress: 'edgecreator2',
-    needsAccountNameSetup: true,
+    needsAccountNameSetup: false,
     noChangeMiningFee: true,
     uniqueIdentifier: {
       addButtonText: s.strings.unique_identifier_dropdown_option_memo,
@@ -287,7 +287,8 @@ export const SPECIAL_CURRENCY_INFO: SpecialCurrencyInfo = {
     isImportKeySupported: {
       privateKeyLabel: s.strings.create_wallet_import_active_key_input_prompt,
       privateKeyInstructions: s.strings.create_wallet_import_active_key_instructions
-    }
+    },
+    isSingleRequestAccountActivation: {}
   },
   ETH: {
     dummyPublicAddress: '0x0d73358506663d484945ba85d0cd435ad610b0a0',

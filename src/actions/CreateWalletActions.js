@@ -39,11 +39,25 @@ export const createCurrencyWallet = (
   }
   return account
     .createCurrencyWallet(type, opts)
-    .then(edgeWallet => {
+    .then(async edgeWallet => {
+      const { currencyCode } = edgeWallet.currencyInfo
+      if (Constants.getSpecialCurrencyInfo(currencyCode).isSingleRequestAccountActivation) {
+        const currencyPluginName = Constants.CURRENCY_PLUGIN_NAMES[currencyCode]
+        const currencyPlugin = account.currencyConfig[currencyPluginName]
+        try {
+          const { publicWalletInfo } = edgeWallet
+          const { keys } = publicWalletInfo
+          const { publicKey, ownerPublicKey } = keys
+          await currencyPlugin.otherMethods.createAccountViaSingleApi({ activePublicKey: publicKey, ownerPublicKey })
+        } catch (error) {
+          showError(error)
+          dispatch({ type: 'UI/WALLETS/CREATE_WALLET_FAILURE' })
+        }
+      }
       if (popScene) Actions.popTo(Constants.WALLET_LIST_SCENE)
       dispatch({ type: 'UI/WALLETS/CREATE_WALLET_SUCCESS' })
       if (selectWallet) {
-        dispatch(selectWalletAction(edgeWallet.id, edgeWallet.currencyInfo.currencyCode))
+        dispatch(selectWalletAction(edgeWallet.id, currencyCode))
       }
       return edgeWallet
     })
