@@ -33,8 +33,8 @@ import { WalletList } from '../common/WalletList.js'
 import { WalletListEmptyRow } from '../common/WalletListEmptyRow.js'
 import { WalletListFooter } from '../common/WalletListFooter.js'
 import { WalletListSortableRow } from '../common/WalletListSortableRow.js'
-import { WiredBalanceBox } from '../common/WiredBalanceBox.js'
 import { SettingsHeaderRow } from '../themed/SettingsHeaderRow.js'
+import { WiredBalanceBox } from '../themed/WiredBalanceBox.js'
 
 type StateProps = {
   accountMessages: MessageTweak[],
