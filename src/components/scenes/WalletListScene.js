@@ -17,7 +17,6 @@ import * as Constants from '../../constants/indexConstants.js'
 import s from '../../locales/strings.js'
 import { getDefaultIsoFiat, getIsAccountBalanceVisible } from '../../modules/Settings/selectors.js'
 import T from '../../modules/UI/components/FormattedText/FormattedText.ui.js'
-import { WiredProgressBar } from '../../modules/UI/components/WiredProgressBar/WiredProgressBar.ui.js'
 import { getActiveWalletIds, getWalletLoadingPercent } from '../../modules/UI/selectors.js'
 import { dayText, nightText } from '../../styles/common/textStyles.js'
 import { THEME } from '../../theme/variables/airbitz.js'
@@ -35,6 +34,7 @@ import { WalletListFooter } from '../common/WalletListFooter.js'
 import { WalletListSortableRow } from '../common/WalletListSortableRow.js'
 import { SettingsHeaderRow } from '../themed/SettingsHeaderRow.js'
 import { WiredBalanceBox } from '../themed/WiredBalanceBox.js'
+import { WiredProgressBar } from '../themed/WiredProgressBar.js'
 
 type StateProps = {
   accountMessages: MessageTweak[],
