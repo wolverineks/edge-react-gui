@@ -78,7 +78,7 @@ class WalletListMenuModalComponent extends PureComponent<Props> {
       return
     }
 
-    // Main wallet options
+    // Main wallet options, should use specialCurrencyInfo instead of currencyCode list
     for (const option of WALLET_LIST_MENU) {
       const { currencyCodes, label, value } = option
       if (currencyCodes != null && !currencyCodes.includes(currencyCode)) continue

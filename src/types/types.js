@@ -78,9 +78,9 @@ export type ExchangeData = {
 }
 
 export type CustomTokenInfo = {
-  currencyName: string,
+  currencyName: string | null,
   currencyCode: string,
-  contractAddress: string,
+  contractAddress: string | null,
   multiplier: string,
   denomination: string, // eventually change to mandatory
   isVisible?: boolean, // eventually change to mandatory,

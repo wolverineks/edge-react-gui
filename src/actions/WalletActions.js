@@ -247,7 +247,7 @@ export const getEnabledTokens = (walletId: string) => async (dispatch: Dispatch,
   }
 }
 
-export const assembleCustomToken = (currencyName: string, currencyCode: string, contractAddress: string, denomination: string, walletType: string) => {
+export const assembleCustomToken = (currencyName: string, currencyCode: string, contractAddress: string | null, denomination: string, walletType: string) => {
   // create modified object structure to match metaTokens
   const newTokenObj: CustomTokenInfo = {
     currencyName,

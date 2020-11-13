@@ -4,7 +4,7 @@ import _ from 'lodash'
 import * as React from 'react'
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from 'react-native'
 
-import { MAX_TOKEN_CODE_CHARACTERS } from '../../constants/indexConstants.js'
+import { MAX_TOKEN_CODE_CHARACTERS, getSpecialCurrencyInfo } from '../../constants/indexConstants.js'
 import s from '../../locales/strings.js'
 import { PrimaryButton } from '../../modules/UI/components/Buttons/PrimaryButton.ui.js'
 import Text from '../../modules/UI/components/FormattedText/FormattedText.ui.js'
@@ -63,7 +63,10 @@ export class AddToken extends React.Component<AddTokenProps, State> {
   }
 
   render() {
-    const { addTokenPending } = this.props
+    const { addTokenPending, wallet } = this.props
+    const { currencyCode: parentCurrencyCode } = wallet
+    const { isCustomTokensSupported: tokenParams } = getSpecialCurrencyInfo(parentCurrencyCode)
+
     return (
       <SceneWrapper background="body">
         <ScrollView style={styles.container}>
@@ -92,25 +95,29 @@ export class AddToken extends React.Component<AddTokenProps, State> {
               maxLength={MAX_TOKEN_CODE_CHARACTERS}
             />
           </View>
-          <View style={styles.contractAddressArea}>
-            <FormField
-              value={this.state.contractAddress}
-              onChangeText={this.onChangeContractAddress}
-              label={s.strings.addtoken_contract_address_input_text}
-              returnKeyType="done"
-              autoCorrect={false}
-            />
-          </View>
-          <View style={styles.decimalPlacesArea}>
-            <FormField
-              value={this.state.decimalPlaces}
-              onChangeText={this.onChangeDecimalPlaces}
-              label={s.strings.addtoken_denomination_input_text}
-              returnKeyType="done"
-              autoCorrect={false}
-              keyboardType="numeric"
-            />
-          </View>
+          {tokenParams.contractAddress && (
+            <View style={styles.contractAddressArea}>
+              <FormField
+                value={this.state.contractAddress}
+                onChangeText={this.onChangeContractAddress}
+                label={s.strings.addtoken_contract_address_input_text}
+                returnKeyType="done"
+                autoCorrect={false}
+              />
+            </View>
+          )}
+          {tokenParams.decimalPlaces && (
+            <View style={styles.decimalPlacesArea}>
+              <FormField
+                value={this.state.decimalPlaces}
+                onChangeText={this.onChangeDecimalPlaces}
+                label={s.strings.addtoken_denomination_input_text}
+                returnKeyType="done"
+                autoCorrect={false}
+                keyboardType="numeric"
+              />
+            </View>
+          )}
           <View style={styles.buttonsArea}>
             <PrimaryButton style={styles.saveButton} onPress={this._onSave}>
               {addTokenPending ? <ActivityIndicator /> : <PrimaryButton.Text>{s.strings.string_save}</PrimaryButton.Text>}
@@ -148,6 +155,9 @@ export class AddToken extends React.Component<AddTokenProps, State> {
 
   _onSave = () => {
     const currencyCode = this.state.currencyCode.toUpperCase()
+    const { wallet } = this.props
+    const { currencyCode: parentCurrencyCode } = wallet
+    const { isCustomTokensSupported: tokenParams } = getSpecialCurrencyInfo(parentCurrencyCode)
     this.setState(
       {
         currencyCode
@@ -163,8 +173,15 @@ export class AddToken extends React.Component<AddTokenProps, State> {
         if (currentCustomTokenIndex >= 0 && currentCustomTokens[currentCustomTokenIndex].isVisible !== false) {
           Alert.alert(s.strings.manage_tokens_duplicate_currency_code)
         } else {
-          if (currencyName && currencyCode && decimalPlaces && contractAddress) {
+          // only require valid criteria
+          if (
+            ((tokenParams.currencyName && currencyName) || !tokenParams.currencyName) &&
+            ((tokenParams.currencyCode && currencyCode) || !tokenParams.currencyCode) &&
+            ((tokenParams.decimalPlaces && decimalPlaces) || !tokenParams.decimalPlaces) &&
+            ((tokenParams.contractAddress && contractAddress) || !tokenParams.contractAddress)
+          ) {
             const denomination = decimalPlacesToDenomination(decimalPlaces)
+            console.log('addTokenScene and contractAddress is: ', contractAddress)
             addNewToken(walletId, currencyName, currencyCode, contractAddress, denomination, wallet.type)
             onAddToken(currencyCode)
           } else {

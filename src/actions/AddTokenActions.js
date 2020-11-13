@@ -17,7 +17,7 @@ export const addNewToken = (
   walletId: string,
   currencyName: string,
   currencyCode: string,
-  contractAddress: string,
+  contractAddress: string | null,
   denomination: string,
   walletType: string
 ) => {
@@ -51,7 +51,7 @@ export const addTokenAsync = async (
   walletId: string,
   currencyName: string,
   currencyCode: string,
-  contractAddress: string,
+  contractAddress: string | null,
   denomination: string,
   state: RootState
 ) => {
