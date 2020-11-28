@@ -3,6 +3,7 @@
 
 import 'core-js'
 import 'edge-currency-accountbased/lib/index.js'
-import 'edge-currency-bitcoin/lib/react-native.js'
+// import 'edge-currency-bitcoin/lib/react-native.js'
 import 'edge-currency-monero'
+import 'edge-currency-plugins/lib/btc.js'
 import 'edge-exchange-plugins'
