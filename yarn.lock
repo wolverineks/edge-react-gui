@@ -4071,9 +4071,9 @@ edge-core-js@^0.17.12:
     scrypt-js "^2.0.3"
     yaob "^0.3.6"
 
-"edge-currency-accountbased@https://github.com/EdgeApp/edge-currency-accountbased.git#e7a7d77":
+"edge-currency-accountbased@https://github.com/EdgeApp/edge-currency-accountbased#matthew/addHedera2":
   version "0.7.22"
-  resolved "https://github.com/EdgeApp/edge-currency-accountbased.git#e7a7d7703bcb4ab2cb7741d985450d40eab60b6e"
+  resolved "https://github.com/EdgeApp/edge-currency-accountbased#9449e14d11f492a7dea5cce98922d78e8eb0ef96"
   dependencies:
     "@binance-chain/javascript-sdk" "^2.14.4"
     "@fioprotocol/fiosdk" "^1.0.2"
