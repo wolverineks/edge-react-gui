@@ -75,6 +75,7 @@ export const guiPlugins: { [pluginId: string]: GuiPlugin } = {
     baseUri: hostedUri + 'com.bity/index.html',
     lockUriPath: true,
     queryPromoCode: 'client_value',
+    baseQuery: { countryCode: null },
     displayName: 'Bity'
     // supportßEmail: 'support@bity.com'
   },
