@@ -1,6 +1,6 @@
 // @flow
 
-import type { EdgeAccount } from 'edge-core-js'
+import type { EdgeAccount, EdgeContext } from 'edge-core-js'
 import { getSupportedBiometryType } from 'edge-login-ui-rn'
 import * as React from 'react'
 import { Image, ScrollView } from 'react-native'
@@ -41,6 +41,7 @@ import { PrimaryButton } from '../themed/ThemedButtons.js'
 
 type StateProps = {
   account: EdgeAccount,
+  context: EdgeContext,
   autoLogoutTimeInSeconds: number,
   defaultFiat: string,
   developerModeOn: boolean,
@@ -64,6 +65,7 @@ type Props = StateProps & DispatchProps & ThemeProps
 
 type State = {
   touchIdText: string,
+  logVerbose: boolean,
   darkTheme: boolean
 }
 
@@ -72,6 +74,7 @@ export class SettingsSceneComponent extends React.Component<Props, State> {
     super(props)
     const theme = getTheme()
     this.state = {
+      logVerbose: false,
       touchIdText: s.strings.settings_button_use_touchID,
       darkTheme: theme === edgeDark
     }
@@ -79,6 +82,14 @@ export class SettingsSceneComponent extends React.Component<Props, State> {
 
   componentDidMount() {
     this.loadBiometryType().catch(showError)
+    this.loadSettings().catch(showError)
+  }
+
+  async loadSettings() {
+    const settings = await this.props.context.getSettings()
+    if (typeof settings.logVerbose === 'boolean') {
+      this.setState({ logVerbose: settings.logVerbose })
+    }
   }
 
   async loadBiometryType() {
@@ -142,6 +153,11 @@ export class SettingsSceneComponent extends React.Component<Props, State> {
 
   _onPressNotifications = () => {
     Actions[Constants.NOTIFICATION_SETTINGS]()
+  }
+
+  handleLogVerbose = () => {
+    this.props.context.changeSettings({ logVerbose: !this.state.logVerbose })
+    this.setState({ logVerbose: !this.state.logVerbose })
   }
 
   onDeveloperPress = () => {
@@ -241,6 +257,7 @@ export class SettingsSceneComponent extends React.Component<Props, State> {
           )}
           <SettingsRow onPress={this.props.showRestoreWalletsModal} text={s.strings.restore_wallets_modal_title} />
           <SettingsRow text={s.strings.title_terms_of_service} onPress={Actions[Constants.TERMS_OF_SERVICE]} right={rightArrow} />
+          <SettingsSwitchRow key="logVerbose" text={s.strings.settings_verbose_logging} value={this.state.logVerbose} onPress={this.handleLogVerbose} />
           <PrimaryButton onPress={this.props.showSendLogsModal} label={s.strings.settings_button_send_logs} marginRem={2} />
         </ScrollView>
       </SceneWrapper>
@@ -270,6 +287,7 @@ const getStyles = cacheStyles((theme: Theme) => {
 export const SettingsScene = connect(
   (state: RootState): StateProps => ({
     account: state.core.account,
+    context: state.core.context,
     autoLogoutTimeInSeconds: SETTINGS_SELECTORS.getAutoLogoutTimeInSeconds(state),
     defaultFiat: SETTINGS_SELECTORS.getDefaultFiat(state),
     developerModeOn: state.ui.settings.developerModeOn,

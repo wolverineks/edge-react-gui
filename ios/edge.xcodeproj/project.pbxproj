@@ -431,10 +431,12 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-edge/Pods-edge-frameworks.sh",
 				"${PODS_ROOT}/OpenSSL-Universal/Frameworks/ios/OpenSSL.framework",
+				"${PODS_ROOT}/OpenSSL-Universal/Frameworks/ios/OpenSSL.framework.dSYM",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+				"${DWARF_DSYM_FOLDER_PATH}/OpenSSL.framework.dSYM",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
