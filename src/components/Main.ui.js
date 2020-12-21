@@ -59,7 +59,6 @@ import { logoutRequest } from '../modules/Login/action.js'
 import ControlPanel from '../modules/UI/components/ControlPanel/ControlPanelConnector'
 import { ifLoggedIn } from '../modules/UI/components/LoginStatus/LoginStatus.js'
 import { PasswordRecoveryReminderModalConnector } from '../modules/UI/components/PasswordRecoveryReminderModal/PasswordRecoveryReminderModalConnector.js'
-import { passwordReminderModalConnector as PasswordReminderModal } from '../modules/UI/components/PasswordReminderModal/indexPasswordReminderModal.js'
 import { type Permission } from '../reducers/PermissionsReducer.js'
 import { type Dispatch, type RootState } from '../types/reduxTypes.js'
 import { scale } from '../util/scaling.js'
@@ -151,7 +150,6 @@ export class MainComponent extends React.Component<Props> {
             {this.renderTabView()}
           </Stack>
         </RouterWithRedux>
-        <PasswordReminderModal />
         <PasswordRecoveryReminderModalConnector />
       </>
     )
