@@ -75,9 +75,6 @@ test('initialState', () => {
       walletArchivesVisible: false,
       walletId: ''
     },
-    passwordReminderModal: {
-      status: null
-    },
     passwordRecoveryReminderModal: {
       isVisible: false
     },

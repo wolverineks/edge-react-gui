@@ -9,10 +9,6 @@ import {
   type PasswordRecoveryReminderModalState,
   passwordRecoveryReminderModal
 } from '../../modules/UI/components/PasswordRecoveryReminderModal/PasswordRecoveryReminderModalReducer.js'
-import {
-  type PasswordReminderModalState,
-  passwordReminderModalReducer as passwordReminderModal
-} from '../../modules/UI/components/PasswordReminderModal/passwordReminderModalReducer.js'
 import type { Action } from '../../types/reduxTypes.js'
 import { type EditTokenState, editToken } from '../EditTokenReducer.js'
 import { type RequestTypeState, requestType } from '../RequestTypeReducer.js'
@@ -31,7 +27,6 @@ export type ScenesState = {
   +exchangeRate: ExchangeRateState,
   +fioAddress: FioAddressSceneState,
   +passwordRecoveryReminderModal: PasswordRecoveryReminderModalState,
-  +passwordReminderModal: PasswordReminderModalState,
   +requestType: RequestTypeState,
   +scan: ScanState,
   +sendConfirmation: SendConfirmationState,
@@ -48,7 +43,6 @@ export const scenes: Reducer<ScenesState, Action> = combineReducers({
   exchangeRate,
   fioAddress,
   passwordRecoveryReminderModal,
-  passwordReminderModal,
   requestType,
   scan,
   sendConfirmation,

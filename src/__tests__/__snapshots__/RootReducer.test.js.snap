@@ -134,9 +134,6 @@ Object {
       "passwordRecoveryReminderModal": Object {
         "isVisible": false,
       },
-      "passwordReminderModal": Object {
-        "status": null,
-      },
       "requestType": Object {
         "uniqueLegacyAddress": false,
         "useLegacyAddress": false,
