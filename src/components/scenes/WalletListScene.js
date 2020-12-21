@@ -19,8 +19,10 @@ import { type GuiWallet } from '../../types/types.js'
 import { getTotalFiatAmountFromExchangeRates } from '../../util/utils.js'
 import { CrossFade } from '../common/CrossFade.js'
 import { SceneWrapper } from '../common/SceneWrapper.js'
+import { Airship } from '../services/AirshipInstance.js'
 import { type Theme, type ThemeProps, cacheStyles, withTheme } from '../services/ThemeContext.js'
 import { EdgeText } from '../themed/EdgeText.js'
+import { PasswordReminderModal } from '../themed/PasswordReminderModal.js'
 import { PromoCard } from '../themed/PromoCard.js'
 import { SettingsHeaderRow } from '../themed/SettingsHeaderRow.js'
 import { WalletList } from '../themed/WalletList.js'
@@ -32,7 +34,8 @@ import { WiredProgressBar } from '../themed/WiredProgressBar.js'
 type StateProps = {
   activeWalletIds: string[],
   exchangeRates: Object,
-  wallets: { [walletId: string]: GuiWallet }
+  wallets: { [walletId: string]: GuiWallet },
+  isPasswordReminderVisible: boolean
 }
 
 type DispatchProps = {
@@ -52,6 +55,16 @@ class WalletListComponent extends React.PureComponent<Props, State> {
     this.state = {
       sorting: false
     }
+  }
+
+  openPasswordReminderModal = () => {
+    if (this.props.isPasswordReminderVisible) {
+      Airship.show(bridge => <PasswordReminderModal bridge={bridge} />)
+    }
+  }
+
+  componentDidMount() {
+    this.openPasswordReminderModal()
   }
 
   handleSort = () => this.setState({ sorting: true })
@@ -160,7 +173,8 @@ export const WalletListScene = connect(
     return {
       activeWalletIds,
       exchangeRates: state.exchangeRates,
-      wallets: state.ui.wallets.byId
+      wallets: state.ui.wallets.byId,
+      isPasswordReminderVisible: state.ui.passwordReminder.needsPasswordCheck
     }
   },
   (dispatch: Dispatch): DispatchProps => ({
