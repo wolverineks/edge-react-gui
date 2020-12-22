@@ -30,7 +30,8 @@ const contextOptions = {
   apiKey: ENV.AIRBITZ_API_KEY,
   appId: '',
   deviceDescription: `${getBrand()} ${getDeviceId()}`,
-  plugins: allPlugins
+  plugins: allPlugins,
+  authServer: 'https://login1.edge.app/api'
 }
 
 const isReactNative = detectBundler.isReactNative
