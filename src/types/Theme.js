@@ -145,6 +145,11 @@ export type Theme = {
   dateModalBackgroundLight: string,
   dateModalBackgroundDark: string,
 
+  // Wallet Icon Progress
+  walletProgressIconFill: string,
+  walletProgressIconFillDone: string,
+  walletProgressIconBackground: string,
+
   // Misc
   // pressedOpacity: number,
 

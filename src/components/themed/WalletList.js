@@ -9,7 +9,6 @@ import { connect } from 'react-redux'
 import { selectWallet } from '../../actions/WalletActions.js'
 import { WALLET_LIST_SCENE } from '../../constants/indexConstants.js'
 import { formatNumber } from '../../locales/intl.js'
-import s from '../../locales/strings.js'
 import { SYNCED_ACCOUNT_DEFAULTS } from '../../modules/Core/Account/settings.js'
 import { emptyEdgeDenomination } from '../../modules/Settings/selectors.js'
 import { calculateWalletFiatBalanceWithoutState, getActiveWalletIds } from '../../modules/UI/selectors.js'
@@ -35,8 +34,7 @@ type StateProps = {
   exchangeRates: { [string]: number },
   showBalance: boolean,
   settings: Object,
-  wallets: { [walletId: string]: GuiWallet },
-  walletsProgress: Object
+  wallets: { [walletId: string]: GuiWallet }
 }
 
 type DispatchProps = {
@@ -93,22 +91,6 @@ class WalletListComponent extends React.PureComponent<Props> {
     return walletList
   }
 
-  getWalletProgress(walletId: string): number {
-    const walletProgress = this.props.walletsProgress[walletId]
-
-    if (walletProgress === 1) {
-      return 1
-    }
-    if (walletProgress < 0.1) {
-      return 0.1
-    }
-    if (walletProgress > 0.95) {
-      return 0.95
-    }
-
-    return walletProgress
-  }
-
   getDenomination(currencyCode: string): EdgeDenomination {
     const { settings } = this.props
     const denominationMultiplier = settings[currencyCode].denomination
@@ -142,7 +124,6 @@ class WalletListComponent extends React.PureComponent<Props> {
       const balance = isToken ? guiWallet.nativeBalances[currencyCode] : guiWallet.primaryNativeBalance
 
       const walletFiatSymbol = getFiatSymbol(guiWallet.isoFiatCurrencyCode)
-      const walletProgress = this.getWalletProgress(walletId)
 
       // Crypto Amount And Exchange Rate
       const denomination = this.getDenomination(currencyCode)
@@ -159,7 +140,7 @@ class WalletListComponent extends React.PureComponent<Props> {
       // Currency Exhange Rate
       const exchangeRateFormat = exchangeRate ? formatNumber(exchangeRate, { toFixed: 2 }) : null
       const exchangeRateFiatSymbol = exchangeRateFormat ? `${walletFiatSymbol} ` : ''
-      const exchangeRateString = exchangeRateFormat ? `${exchangeRateFormat}/${currencyCode}` : s.strings.no_exchange_rate
+      const exchangeRateString = exchangeRateFormat ? `${exchangeRateFormat}` : ''
 
       // Yesterdays Percentage Difference
       const yesterdayUsdExchangeRate = exchangeRates[`${currencyCode}_iso:USD_${getYesterdayDateRoundDownHour()}`]
@@ -180,10 +161,10 @@ class WalletListComponent extends React.PureComponent<Props> {
         differencePercentageString = '0.00%'
       } else if (exchangeRate && differencePercentage && differencePercentage < 0) {
         differencePercentageStringStyle = theme.negativeText
-        differencePercentageString = `- ${Math.abs(differencePercentage).toFixed(2)}%`
+        differencePercentageString = `-${Math.abs(differencePercentage).toFixed(2)}%`
       } else if (exchangeRate && differencePercentage && differencePercentage > 0) {
         differencePercentageStringStyle = theme.positiveText
-        differencePercentageString = `+ ${Math.abs(differencePercentage).toFixed(2)}%`
+        differencePercentageString = `+${Math.abs(differencePercentage).toFixed(2)}%`
       }
 
       let symbolImage
@@ -210,7 +191,6 @@ class WalletListComponent extends React.PureComponent<Props> {
           symbolImage={symbolImage}
           walletId={walletId}
           walletName={guiWallet.name}
-          walletProgress={walletProgress}
           swipeRow={rowMap[data.item.key]}
         />
       )
@@ -243,8 +223,7 @@ export const WalletList = connect(
       exchangeRates: state.exchangeRates,
       showBalance: state.ui.settings.isAccountBalanceVisible,
       settings: state.ui.settings,
-      wallets: state.ui.wallets.byId,
-      walletsProgress: state.ui.wallets.walletLoadingProgress
+      wallets: state.ui.wallets.byId
     }
   },
   (dispatch: Dispatch): DispatchProps => ({
