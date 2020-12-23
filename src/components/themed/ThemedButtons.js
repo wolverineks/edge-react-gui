@@ -93,11 +93,9 @@ export function ButtonBox(props: Props) {
   const theme = useTheme()
 
   return (
-    <View style={spacingStyles(props, theme)}>
-      <TouchableHighlight activeOpacity={theme.underlayOpacity} underlayColor={theme.underlayColor} onPress={onPress}>
-        {children}
-      </TouchableHighlight>
-    </View>
+    <TouchableOpacity onPress={onPress} style={spacingStyles(props, theme)}>
+      {children}
+    </TouchableOpacity>
   )
 }
 
