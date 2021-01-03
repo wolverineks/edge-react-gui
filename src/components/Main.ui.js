@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react'
-import { Image, StyleSheet, TouchableWithoutFeedback, View, YellowBox } from 'react-native'
+import { Image, LogBox, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { Actions, Drawer, Router, Scene, Stack, Tabs } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 
@@ -144,7 +144,7 @@ export class MainComponent extends React.Component<Props> {
     super(props)
 
     if (ENV.HIDE_IS_MOUNTED) {
-      YellowBox.ignoreWarnings([
+      LogBox.ignoreLogs([
         'Warning: isMounted(...) is deprecated',
         'Module RCTImageLoader',
         'The scalesPageToFit property is not supported when useWebKit = true'

@@ -3,7 +3,7 @@
 
 import Bugsnag from '@bugsnag/react-native'
 import * as React from 'react'
-import { Platform, StatusBar, Text, TextInput } from 'react-native'
+import { LogBox, Platform, StatusBar, Text, TextInput } from 'react-native'
 import RNFS from 'react-native-fs'
 
 import ENV from '../env.json'
@@ -35,8 +35,7 @@ global.clog = console.log
 
 // TODO: Remove isMounted from IGNORED_WARNINGS once we upgrade to RN 0.57
 const IGNORED_WARNINGS = ['slowlog', 'Setting a timer for a long period of time', 'Warning: isMounted(...) is deprecated']
-// $FlowExpectedError
-console.ignoredYellowBox = IGNORED_WARNINGS
+LogBox.ignoreLogs(IGNORED_WARNINGS)
 
 global.OS = Platform.OS
 // Disable the font scaling
