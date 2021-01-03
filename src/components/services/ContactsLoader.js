@@ -186,10 +186,14 @@ const merchantPartners = [
 ]
 
 class ContactsLoaderComponent extends React.Component<Props> {
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const { contactsPermission } = nextProps
+  componentDidMount() {
+    if (this.props.contactsPermission === 'authorized') {
+      this.loadContacts()
+    }
+  }
 
-    if (this.props.contactsPermission !== 'authorized' && contactsPermission === 'authorized') {
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.contactsPermission === 'authorized' && prevProps.contactsPermission !== 'authorized') {
       this.loadContacts()
     }
   }
